@@ -125,3 +125,86 @@ db.products.find({
 // -- slower to build
 // - default is foreground background: false
 db.ratings.createIndex({ age: 1 }, { background: true });
+
+// Geo Spatial Index
+// - GeoJSON format supported by mongodb
+// -- point
+// -- line
+// -- polygon
+db.places.insertOne({
+    name: 'Central Park',
+    location: { type: 'Point', coordinates: [-73.97, 40.77] }, // change coordinates
+});
+db.places.insertOne({
+    name: 'Conservtory of Flowers',
+    location: { type: 'Point', coordinates: [-73.96, 40.77] }, // change coordinates
+});
+db.places.insertOne({
+    name: 'Golden Gate Park',
+    location: { type: 'Point', coordinates: [-73.96, 40.77] }, // change coordinates
+});
+db.places.insertOne({
+    name: 'Nopa',
+    location: { type: 'Point', coordinates: [-73.97, 40.77] }, // change coordinates
+});
+// Running Geo Query
+db.places.find({
+    location: {
+        $near: {
+            $geometry: { type: 'Point', coordinates: [-73.9667, 40.78] },
+            $maxDistance: 500, // value in meters
+        },
+    },
+});
+// running the above query will error out complaining about missing geospatial index
+// creating geospatial index
+db.places.createIndex({ location: '2dsphere' });
+
+// Find places inside area
+const p1 = [-122.454, 37.774];
+const p2 = [-122.453, 37.766];
+const p3 = [-122.51, 37.764];
+const p4 = [-122.511, 37.772];
+db.areas.insertOne({
+    name: 'Golden Gate Park',
+    area: {
+        type: 'Polygon',
+        coordinates: [p1, p2, p3, p4, p1],
+    },
+});
+
+// $geoWithin
+db.places.find({
+    location: {
+        $geoWithin: {
+            $geometry: {
+                type: 'Polygon',
+                coordinates: [[p1, p2, p3, p4, p1]],
+            },
+        },
+    },
+});
+db.area.createIndex({ area: '2dsphere' });
+
+// $geoIntersects
+// - finds if location intersects with area
+// - on matching area is returned (Golden Gate Park) in our example case
+// - also you can intersext areas within areas
+// - here we are finding if point intersects with area
+db.areas.find({
+    $geoIntersects: {
+        $geometry: { type: 'Point', coordinates: [-122.49, 37.769] },
+    },
+});
+
+// $nearSphere
+// - within radius
+// - we get unsored results
+// - the near gets us sorted results
+db.places.find({
+    location: {
+        $geoWithin: {
+            $centerSphere: [[-73.9667, 40.78], 10 / 6378.1], // p[longtitude, latitude] 10 in kelometers converted to radians
+        },
+    },
+});
