@@ -6,7 +6,6 @@
 
 -   [Index Summary](./indexes/index-summary.png)
 -   [GeoSpatial Summary](./indexes/geoindex-summary.md)
-
-# Useful Links
-
--   [More Info On Indexes](./indexes/useful-links.md)
+-   [Aggregation Summary](./aggregations/aggregation-summary.png)
+-   [Numeric Data](./numeric-data/index.js)
+-   [Security](./security/index-summary.md)
