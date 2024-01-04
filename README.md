@@ -9,3 +9,4 @@
 -   [Aggregation Summary](./aggregations/aggregation-summary.png)
 -   [Numeric Data](./numeric-data/index.js)
 -   [Security](./security/index-summary.md)
+-   [Performance](./performance/index-summary.md)
